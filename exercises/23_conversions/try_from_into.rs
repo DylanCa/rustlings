@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,6 +39,24 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let mut colors= vec!();
+
+        match u8::try_from(tuple.0) {
+            Ok(c) => { if c > 255 { return Err(IntoColorError::BadLen) } else { colors.push(c) } },
+            Err(_) => return Err(IntoColorError::IntConversion),
+        }
+
+        match u8::try_from(tuple.1) {
+            Ok(c) => { if c > 255 { return Err(IntoColorError::BadLen) } else { colors.push(c) } },
+            Err(_) => return Err(IntoColorError::IntConversion),
+        }
+
+        match u8::try_from(tuple.2) {
+            Ok(c) => { if c > 255 { return Err(IntoColorError::BadLen) } else { colors.push(c) } },
+            Err(_) => return Err(IntoColorError::IntConversion),
+        }
+
+        Ok(Color { red: colors[0], green: colors[1], blue: colors[2] })
     }
 }
 
@@ -48,6 +64,17 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let mut colors= vec!();
+
+        for c in arr.iter() {
+            if let Ok(cu) = u8::try_from(*c) {
+                colors.push(cu);
+            } else {
+                return Err(IntoColorError::IntConversion)
+            }
+        };
+
+        Ok(Color { red: colors[0], green: colors[1], blue: colors[2] })
     }
 }
 
@@ -55,6 +82,18 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 { return Err(IntoColorError::BadLen); }
+
+        let mut colors= vec!();
+
+        for c in slice.iter() {
+            if let Ok(cu) = u8::try_from(*c) {
+                colors.push(cu);
+            } else {
+                return Err(IntoColorError::IntConversion)
+            }
+        };
+        Ok(Color { red: colors[0], green: colors[1], blue: colors[2] })
     }
 }
 
